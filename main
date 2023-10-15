@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class Student {
 public:
@@ -13,6 +14,15 @@ public:
 
     int getRollNumber() const {
         return rollNumber;
+    }
+
+    double getGrade() const {
+        return grade;
+    }
+
+    void updateStudentInfo(const std::string& newName, double newGrade) {
+        name = newName;
+        grade = newGrade;
     }
 
 private:
@@ -44,6 +54,41 @@ public:
         std::cout << "Student with Roll Number " << rollNumber << " not found.\n";
     }
 
+    void deleteStudent(int rollNumber) {
+        auto it = std::remove_if(students.begin(), students.end(),
+            [rollNumber](const Student& student) { return student.getRollNumber() == rollNumber; });
+
+        if (it != students.end()) {
+            students.erase(it, students.end());
+            std::cout << "Student with Roll Number " << rollNumber << " has been deleted.\n";
+        }
+        else {
+            std::cout << "Student with Roll Number " << rollNumber << " not found.\n";
+        }
+    }
+
+    double calculateAverageGrade() const {
+        if (students.empty()) {
+            return 0.0;
+        }
+        double sum = 0.0;
+        for (const Student& student : students) {
+            sum += student.getGrade();
+        }
+        return sum / students.size();
+    }
+
+    void updateStudentInfo(int rollNumber, const std::string& newName, double newGrade) {
+        for (Student& student : students) {
+            if (student.getRollNumber() == rollNumber) {
+                student.updateStudentInfo(newName, newGrade);
+                std::cout << "Student information updated.\n";
+                return;
+            }
+        }
+        std::cout << "Student with Roll Number " << rollNumber << " not found.\n";
+    }
+
 private:
     std::vector<Student> students;
 };
@@ -63,7 +108,11 @@ int main() {
         std::cout << "Options:\n";
         std::cout << "1. View all students\n";
         std::cout << "2. Search for a student\n";
-        std::cout << "3. Exit\n";
+        std::cout << "3. Add a student\n";
+        std::cout << "4. Delete a student\n";
+        std::cout << "5. Update student information\n";
+        std::cout << "6. Calculate average grade\n";
+        std::cout << "7. Exit\n";
         std::cout << "Enter your choice: ";
         std::cin >> choice;
 
@@ -79,13 +128,44 @@ int main() {
                 database.searchStudent(rollNumber);
                 break;
             case 3:
+                std::string name;
+                double grade;
+                std::cout << "Enter the student's name: ";
+                std::cin >> name;
+                std::cout << "Enter the student's roll number: ";
+                std::cin >> rollNumber;
+                std::cout << "Enter the student's grade: ";
+                std::cin >> grade;
+                database.addStudent(name, rollNumber, grade);
+                std::cout << "Student added.\n";
+                break;
+            case 4:
+                std::cout << "Enter Roll Number to delete: ";
+                std::cin >> rollNumber;
+                database.deleteStudent(rollNumber);
+                break;
+            case 5:
+                std::cout << "Enter Roll Number to update: ";
+                std::cin >> rollNumber;
+                std::string newName;
+                double newGrade;
+                std::cout << "Enter the new name: ";
+                std::cin >> newName;
+                std::cout << "Enter the new grade: ";
+                std::cin >> newGrade;
+                database.updateStudentInfo(rollNumber, newName, newGrade);
+                break;
+            case 6:
+                std::cout << "Average Grade: " << database.calculateAverageGrade() << std::endl;
+                break;
+            case 7:
                 std::cout << "Exiting...\n";
                 break;
             default:
                 std::cout << "Invalid choice. Please try again.\n";
                 break;
         }
-    } while (choice != 3);
+    } while (choice != 7);
 
     return 0;
 }
