@@ -1,0 +1,91 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Student {
+public:
+    Student(const std::string& name, int rollNumber, double grade)
+        : name(name), rollNumber(rollNumber), grade(grade) {}
+
+    void display() const {
+        std::cout << "Name: " << name << ", Roll Number: " << rollNumber << ", Grade: " << grade << std::endl;
+    }
+
+    int getRollNumber() const {
+        return rollNumber;
+    }
+
+private:
+    std::string name;
+    int rollNumber;
+    double grade;
+};
+
+class StudentDatabase {
+public:
+    void addStudent(const std::string& name, int rollNumber, double grade) {
+        students.push_back(Student(name, rollNumber, grade));
+    }
+
+    void viewAllStudents() const {
+        for (const Student& student : students) {
+            student.display();
+        }
+    }
+
+    void searchStudent(int rollNumber) const {
+        for (const Student& student : students) {
+            if (student.getRollNumber() == rollNumber) {
+                std::cout << "Student found:\n";
+                student.display();
+                return;
+            }
+        }
+        std::cout << "Student with Roll Number " << rollNumber << " not found.\n";
+    }
+
+private:
+    std::vector<Student> students;
+};
+
+int main() {
+    StudentDatabase database;
+
+    // Adding students
+    database.addStudent("Alice", 101, 87.5);
+    database.addStudent("Bob", 102, 92.3);
+    database.addStudent("Charlie", 103, 78.9);
+
+    std::cout << "Student Information System\n";
+
+    int choice;
+    do {
+        std::cout << "Options:\n";
+        std::cout << "1. View all students\n";
+        std::cout << "2. Search for a student\n";
+        std::cout << "3. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                std::cout << "All Students:\n";
+                database.viewAllStudents();
+                break;
+            case 2:
+                int rollNumber;
+                std::cout << "Enter Roll Number to search for: ";
+                std::cin >> rollNumber;
+                database.searchStudent(rollNumber);
+                break;
+            case 3:
+                std::cout << "Exiting...\n";
+                break;
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+                break;
+        }
+    } while (choice != 3);
+
+    return 0;
+}
